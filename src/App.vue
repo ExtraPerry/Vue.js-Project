@@ -3,7 +3,7 @@
       data: function () {
         return {
           date: null,
-          montant: null,
+          price: null,
           description: null,
           transactions: [],
         };
@@ -11,15 +11,19 @@
 
       methods: {    //Methods to call.
         ajouter: function () {
-          this.transactions
-            .push({
-              date: this.date,
-              montant: this.montant,
-              description: this.description,
-            });
-            ["date", "montant", "description"].forEach(
-              (attr) => (this[attr] = null)
-            );
+            if(this.date != null && this.price != null && this.description != null){
+                this.transactions.push({
+                    date: this.date,
+                    price: this.price,
+                    description: this.description,
+                });
+
+                ["date", "price", "description"].forEach(
+                    (attr) => (this[attr] = null)
+                );
+            }else{
+                this.errormsg = "No field should be left empty.";
+            }
         },
       },
     };
@@ -32,7 +36,7 @@
       <thead>   <!-- Title of columbs -->
         <tr>
           <th>Date</th>
-          <th>Montant</th>
+          <th>Price</th>
           <th>Description</th>
         </tr>
       </thead>
@@ -44,7 +48,7 @@
                 {{ new Intl.DateTimeFormat('fr-FR').format(new Date(transaction.date)) }}
             </td>
             <td>
-                {{ transaction.montant }}
+                {{ transaction.price }}
             </td>
             <td>
             {{ transaction.description }}
@@ -58,7 +62,7 @@
     <header> <!-- Input elements with button to add to the table. -->
       <div>
         Date : <input type="date" v-model="date" /> <br />
-        Montant : <input type="number" v-model="montant" /> <br />
+        Price : <input type="number" v-model="price" /> <br />
         Description : <input type="text" v-model="description" /> <br />
         <button v-on:click="ajouter">Enregistrer</button>
       </div>
