@@ -2,17 +2,20 @@
     export default {    //Data variables.
       data: function () {
         return {
+          nextId: 0,
           date: null,
           price: null,
           description: null,
           transactions: [],
+          errorMsg: null,
         };
       },
 
       methods: {    //Methods to call.
         ajouter: function () {
-            if(this.date != null && this.price != null && this.description != null){
+            if(this.date && this.price && this.description){
                 this.transactions.push({
+                    id: this.nextId,
                     date: this.date,
                     price: this.price,
                     description: this.description,
@@ -21,10 +24,21 @@
                 ["date", "price", "description"].forEach(
                     (attr) => (this[attr] = null)
                 );
+                this.errorMsg = "";
+                this.nextId++;
             }else{
                 this.errormsg = "No field should be left empty.";
             }
         },
+
+        supprimer: function(transactionId) {
+            this.transactions.splice(transactionId, 1);
+        },
+
+        formatDate: function(date) {
+        return new Intl.DateTimeFormat('fr-FR').format(new Date(date));
+        },
+
       },
     };
 </script>
@@ -40,18 +54,21 @@
           <th>Description</th>
         </tr>
       </thead>
-
+      <!----->
       <tbody>   <!-- Generated table elements, using v-for -->
 
-        <tr v-for="transaction in transactions">
+        <tr v-for="transaction, idx in transactions" :key="transaction.id">
             <td>
-                {{ new Intl.DateTimeFormat('fr-FR').format(new Date(transaction.date)) }}
+                {{ formatDate(transaction.date) }}
             </td>
             <td>
                 {{ transaction.price }}
             </td>
             <td>
-            {{ transaction.description }}
+                {{ transaction.description }}
+            </td>
+            <td>
+                <button v-on:click="supprimer(idx)">Supprimer</button>
             </td>
         </tr>
 
@@ -67,6 +84,8 @@
         <button v-on:click="ajouter">Enregistrer</button>
       </div>
     </header>
+
+    <span v-if="errorMsg">{{this.errorMsg}}</span>
 
 </template>
 
